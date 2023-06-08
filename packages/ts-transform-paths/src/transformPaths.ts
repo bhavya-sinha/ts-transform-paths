@@ -42,7 +42,7 @@ export function transformPaths(
   }
 
   const plugin: CustomTransformer = {
-    before: createTransformer,
+    before: createTransformer as CustomTransformer['before'],
     afterDeclarations: config.disableForDeclarations
       ? undefined
       : (createTransformer as CustomTransformer['afterDeclarations']),

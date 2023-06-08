@@ -20,9 +20,12 @@ export function createFixNode(sf: ts.SourceFile) {
       cachedPos = sf.text.length
       posMap.set(newImport, cachedPos)
       sf.text += newStr
+      //@ts-ignore
       sf.end += newStr.length
     }
+    //@ts-ignore
     fixNode.pos = cachedPos
+    //@ts-ignore
     fixNode.end = cachedPos + newStr.length
 
     return fixNode

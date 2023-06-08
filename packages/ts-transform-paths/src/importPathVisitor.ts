@@ -64,28 +64,31 @@ export function importPathVisitor(
   if (!newImport || newImport === importValue) return
 
   if (nodeToFix && fixNode) fixNode(nodeToFix, newImport)
-  const newSpec = ts.createLiteral(newImport)
+  // const newSpec = ts.createLiteral(newImport)
+  const newSpec = ts.factory.createStringLiteral(newImport)
 
   let newNode: ts.Node | undefined
 
   if (ts.isImportTypeNode(node)) {
-    newNode = ts.updateImportTypeNode(
+    newNode = ts.factory.updateImportTypeNode(
       node,
-      ts.createLiteralTypeNode(newSpec),
+      ts.factory.createLiteralTypeNode(newSpec),
+      node.assertions,
       node.qualifier,
       node.typeArguments,
       node.isTypeOf
     )
+    //@ts-ignore
     newNode.flags = node.flags
   }
 
   if (ts.isImportDeclaration(node)) {
-    newNode = ts.updateImportDeclaration(
+    newNode = ts.factory.updateImportDeclaration(
       node,
-      node.decorators,
       node.modifiers,
       node.importClause,
-      newSpec
+      newSpec,
+      node.assertClause,
     )
 
     /**
@@ -109,16 +112,18 @@ export function importPathVisitor(
      * export const some = { self: 'test' }
      * ```
      */
+     //@ts-ignore
     newNode.flags = node.flags
   }
 
   if (ts.isExportDeclaration(node)) {
-    const exportNode = ts.updateExportDeclaration(
+    const exportNode = ts.factory.updateExportDeclaration(
       node,
-      node.decorators,
       node.modifiers,
+      node.isTypeOnly,
       node.exportClause,
-      newSpec
+      newSpec,
+      node.assertClause      
     )
     if (exportNode.flags !== node.flags) {
       /**
@@ -127,26 +132,28 @@ export function importPathVisitor(
       const ms = exportNode.moduleSpecifier
       const oms = node.moduleSpecifier
       if (ms && oms) {
+        //@ts-ignore
         ms.pos = oms.pos
+        //@ts-ignore
         ms.end = oms.end
+        //@ts-ignore
         ms.parent = oms.parent
       }
 
       newNode = exportNode
-
+      //@ts-ignore
       newNode.flags = node.flags
     }
   }
 
   if (ts.isCallExpression(node))
-    newNode = ts.updateCall(node, node.expression, node.typeArguments, [
+    newNode = ts.factory.updateCallExpression(node, node.expression, node.typeArguments, [
       newSpec,
     ])
 
   if (ts.isModuleDeclaration(node)) {
-    newNode = ts.updateModuleDeclaration(
+    newNode = ts.factory.updateModuleDeclaration(
       node,
-      node.decorators,
       node.modifiers,
       newSpec,
       node.body
