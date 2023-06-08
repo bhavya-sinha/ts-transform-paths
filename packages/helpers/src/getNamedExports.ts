@@ -30,6 +30,7 @@ export function getNamedExports(
         : <Record<string, string[] | string>>(rawModuleIds || {})
 
     return Promise.all(Object.keys(moduleIds).map(id => {
+        //@ts-ignore
         const val = moduleIds[id]
         return val instanceof Array
             ? {id, moduleExports: val}
