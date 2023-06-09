@@ -1,1 +1,0 @@
-# Rollup template plugin

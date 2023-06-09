@@ -1,6 +1,6 @@
 {
   "name": "@bhavya/ts-transform-paths",
-  "version": "1.7.19",
+  "version": "1.7.19-beta",
   "license": "MIT",
   "description": "Ts transform paths",
   "author": {
